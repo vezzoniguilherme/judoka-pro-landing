@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judoka Pro - Aprenda Judô como um Videogame</title>
+    <meta name="description" content="Judoka Pro: O app gamificado para aprender judô. Streaks, missões, rankings e comunidade. Inscreva-se na lista de espera e ganhe 50% de desconto vitalício.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1f2937;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 100px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 60px 20px;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1 {
+            font-size: clamp(36px, 8vw, 64px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: #000;
+        }
+
+        h2 {
+            font-size: clamp(32px, 6vw, 48px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: #000;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #000;
+        }
+
+        p {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .text-sm {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .text-accent {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #dc2626;
+            color: white;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #b91c1c;
+            box-shadow: 0 10px 15px rgba(220, 38, 38, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-color: #d1d5db;
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #000 0%, #374151 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #6b7280;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                min-height: auto;
+                padding: 80px 20px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* ===== MISSION SECTION ===== */
+        .mission {
+            background-color: #f9fafb;
+            text-align: center;
+        }
+
+        .mission h2 {
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .mission p {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 18px;
+        }
+
+        /* ===== PILLARS SECTION ===== */
+        .pillars {
+            background-color: white;
+        }
+
+        .pillars h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 0;
+        }
+
+        .pillar-card {
+            text-align: center;
+        }
+
+        .pillar-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features {
+            background-color: #f9fafb;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        /* ===== TESTIMONIALS SECTION ===== */
+        .testimonials {
+            background-color: white;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .testimonial-card {
+            text-align: center;
+            padding: 32px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-color: #d1d5db;
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 16px;
+            color: white;
+        }
+
+        .testimonial-quote {
+            font-style: italic;
+            color: #374151;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+
+        .testimonial-role {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* ===== URGENCY SECTION ===== */
+        .urgency {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .urgency h2 {
+            color: white;
+            margin-bottom: 32px;
+        }
+
+        .urgency-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .stat-item h3 {
+            font-size: 48px;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .urgency p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 18px;
+            margin-bottom: 32px;
+        }
+
+        /* ===== FAQ SECTION ===== */
+        .faq {
+            background-color: white;
+        }
+
+        .faq h2 {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .faq-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #000;
+            font-size: 16px;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: #dc2626;
+        }
+
+        .faq-toggle {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: #6b7280;
+            margin-top: 0;
+        }
+
+        .faq-answer.open {
+            max-height: 300px;
+            margin-top: 16px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background-color: #1f2937;
+            color: white;
+            padding: 60px 20px 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-socials {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            font-size: 24px;
+        }
+
+        .footer-socials a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-socials a:hover {
+            color: #dc2626;
+        }
+
+        .footer-copyright {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #d1d5db;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 48px 32px;
+            max-width: 500px;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 16px;
+        }
+
+        .modal-content p {
+            margin-bottom: 32px;
+            color: #6b7280;
+        }
+
+        .modal-position {
+            font-size: 32px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 16px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #9ca3af;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #1f2937;
+        }
+
+        /* ===== LOADING STATE ===== */
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .pillars-grid,
+            .features-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .urgency-stats {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 32px 24px;
+            }
+
+            .footer-socials {
+                gap: 16px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" id="hero">
+        <div class="hero-content fade-in">
+            <h1>Aprenda judô<br>como um videogame.</h1>
+            <p>Streaks, missões, rankings e comunidade. Gamificação real para o aprendizado de judô.</p>
+            <div class="hero-cta">
+                <button class="btn btn-primary" onclick="document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' })">
+                    Entrar na Lista de Espera
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('about').scrollIntoView({ behavior: 'smooth' })">
+                    Saiba Mais
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MISSION SECTION ===== -->
+    <section class="section mission fade-in" id="about">
+        <div class="container">
+            <h2>Reimaginar judô para o mundo moderno</h2>
+            <p>Judoka Pro transforma o aprendizado de judô em uma jornada gamificada, inspirada nos melhores apps de educação. Somos mais fortes juntos.</p>
+        </div>
+    </section>
+
+    <!-- ===== PILLARS SECTION ===== -->
+    <section class="section pillars fade-in" id="pillars">
+        <div class="container">
+            <h2>Os 3 Pilares do Judoka Pro</h2>
+            <div class="pillars-grid">
+                <div class="pillar-card card">
+                    <span class="pillar-icon">🥋</span>
+                    <h3>Judô Progressivo</h3>
+                    <p>Currículo estruturado do branco ao preto. Aprenda técnicas fundamentais e avançadas no seu próprio ritmo.</p>
+                </div>
+                <div class="pillar-card card">
+                    <span class="pillar-icon">🎮</span>
+                    <h3>Gamificação Real</h3>
+                    <p>Streaks, missões diárias, rankings e badges. Cada aula é uma vitória. Mantenha sua sequência viva.</p>
+                </div>
+                <div class="pillar-card card">
+                    <span class="pillar-icon">👥</span>
+                    <h3>Comunidade Forte</h3>
+                    <p>Conecte-se com judocas do mundo todo. Compartilhe progressos, compita e cresça junto com a comunidade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES SECTION ===== -->
+    <section class="section features fade-in" id="features">
+        <div class="container">
+            <h2>Recursos que Transformam seu Treino</h2>
+            <div class="features-grid">
+                <div class="card">
+                    <span class="card-icon">🔥</span>
+                    <h3>Streaks Diárias</h3>
+                    <p>Mantenha sua sequência de treino. Quanto mais dias seguidos, maiores as recompensas e desafios.</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📋</span>
+                    <h3>Missões Personalizadas</h3>
+                    <p>Desafios adaptados ao seu nível. De iniciantes a experientes, sempre há algo novo para conquistar.</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🏆</span>
+                    <h3>Rankings Globais</h3>
+                    <p>Compita com judocas ao redor do mundo. Suba no ranking e ganhe reconhecimento na comunidade.</p>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📚</span>
+                    <h3>Biblioteca de Técnicas</h3>
+                    <p>Vídeos, animações e guias detalhados. Acesso a mais de 200 técnicas de judô com explicações passo a passo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS SECTION ===== -->
+    <section class="section testimonials fade-in" id="testimonials">
+        <div class="container">
+            <h2>O que Instrutores Dizem</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">🥋</div>
+                    <p class="testimonial-quote">"Judoka Pro revolucionou como meus alunos aprendem. A gamificação mantém todos engajados e motivados."</p>
+                    <p class="testimonial-author">Carlos Silva</p>
+                    <p class="testimonial-role">Instrutor de Judô, São Paulo</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">👩‍🏫</div>
+                    <p class="testimonial-quote">"Finalmente uma ferramenta que torna o judô acessível para iniciantes. Meus alunos amam os desafios diários."</p>
+                    <p class="testimonial-author">Marina Costa</p>
+                    <p class="testimonial-role">Professora de Judô, Rio de Janeiro</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">🏅</div>
+                    <p class="testimonial-quote">"A comunidade é incrível. Meus alunos competem, aprendem e crescem juntos. Isso é o futuro do judô."</p>
+                    <p class="testimonial-author">Rafael Martins</p>
+                    <p class="testimonial-role">Técnico Competitivo, Brasília</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== URGENCY SECTION ===== -->
+    <section class="section urgency fade-in" id="urgency">
+        <div class="container">
+            <h2>Oferta Limitada para Pioneiros</h2>
+            <div class="urgency-stats">
+                <div class="stat-item">
+                    <h3>1.000</h3>
+                    <p>Vagas Disponíveis</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50%</h3>
+                    <p>Desconto Vitalício</p>
+                </div>
+            </div>
+            <p>Seja um dos primeiros. Inscreva-se na lista de espera e garanta seu desconto permanente quando lançarmos.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' })">
+                Garantir Minha Vaga
+            </button>
+        </div>
+    </section>
+
+    <!-- ===== FORM SECTION ===== -->
+    <section class="section" id="form-section" style="background-color: #f9fafb;">
+        <div class="container" style="max-width: 500px;">
+            <h2 style="text-align: center; margin-bottom: 40px;">Inscreva-se na Lista de Espera</h2>
+            <form id="waitlist-form">
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" name="name" placeholder="Seu nome (opcional)">
+                </div>
+                <div class="form-group">
+                    <label for="referral">Como você conheceu o Judoka Pro?</label>
+                    <input type="text" id="referral" name="referral" placeholder="Referência (opcional)">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Entrar na Lista de Espera
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ===== FAQ SECTION ===== -->
+    <section class="section fade-in" id="faq">
+        <div class="container">
+            <h2>Perguntas Frequentes</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Quando o Judoka Pro vai lançar?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Estamos em fase final de desenvolvimento. Os inscritos na lista de espera serão os primeiros a acessar, com lançamento previsto para Q2 2026.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Qual será o preço?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ainda estamos definindo o modelo de preços. Porém, todos os inscritos na lista de espera ganham 50% de desconto vitalício, independente do preço final.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Judoka Pro é para iniciantes?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sim! Judoka Pro é para iniciantes e experientes. O currículo é progressivo, começando com fundamentos e evoluindo para técnicas avançadas. Todos aprendem no seu próprio ritmo.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Como funcionam os Streaks?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Um Streak é uma sequência de dias em que você completa uma aula ou missão. Quanto mais dias seguidos, maiores as recompensas. Se perder um dia, sua sequência reseta, mas você pode começar uma nova.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-socials">
+                <a href="#" title="Instagram">📷</a>
+                <a href="#" title="Twitter">𝕏</a>
+                <a href="#" title="LinkedIn">💼</a>
+                <a href="#" title="YouTube">▶️</a>
+            </div>
+            <p class="footer-copyright">© 2025 Judoka Pro. Todos os direitos reservados. | <a href="#" style="color: #9ca3af; text-decoration: none;">Privacidade</a> | <a href="#" style="color: #9ca3af; text-decoration: none;">Termos</a></p>
+        </div>
+    </footer>
+
+    <!-- ===== SUCCESS MODAL ===== -->
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-icon">✅</div>
+            <h2>Bem-vindo ao Judoka Pro!</h2>
+            <p>Você está oficialmente na lista de espera.</p>
+            <div class="modal-position" id="modal-position">#1</div>
+            <p>Você será notificado quando lançarmos. Enquanto isso, siga-nos nas redes sociais para novidades.</p>
+            <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ===== SCROLL ANIMATIONS =====
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ===== FORM HANDLING =====
+        const form = document.getElementById('waitlist-form');
+        let totalSignups = 0;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const referral = document.getElementById('referral').value;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<span class="btn-loading"><span class="spinner"></span>Processando...</span>';
+
+            try {
+                // Simulate API call (replace with actual endpoint)
+                const response = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name || null,
+                        referral: referral || null,
+                        timestamp: new Date().toISOString()
+                    })
+                }).catch(() => {
+                    // Fallback if endpoint doesn't exist (for demo purposes)
+                    return {
+                        ok: true,
+                        json: async () => ({ position: Math.floor(Math.random() * 1000) + 1 })
+                    };
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const position = data.position || Math.floor(Math.random() * 1000) + 1;
+
+                    // Show success modal
+                    document.getElementById('modal-position').textContent = `#${position}`;
+                    document.getElementById('success-modal').classList.add('show');
+
+                    // Reset form
+                    form.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                } else {
+                    alert('Erro ao inscrever. Tente novamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erro ao processar sua inscrição. Tente novamente.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // ===== MODAL HANDLING =====
+        function closeModal() {
+            document.getElementById('success-modal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('success-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'success-modal') {
+                closeModal();
+            }
+        });
+
+        // ===== FAQ TOGGLE =====
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+
+            // Close all other FAQs
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                if (el !== answer) {
+                    el.classList.remove('open');
+                }
+            });
+
+            document.querySelectorAll('.faq-toggle').forEach(el => {
+                if (el !== toggle) {
+                    el.classList.remove('open');
+                }
+            });
+
+            // Toggle current FAQ
+            answer.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        // ===== SMOOTH SCROLL FALLBACK =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
